@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INIAD MULTI-CONSOLE V7.0</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        :root { --blue: #004098; --orange: #e67e22; --bg: #e0e0e0; --frame: #333; }
+        body { background: var(--bg); font-family: sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        #console-frame { background: var(--frame); width: 95%; max-width: 600px; min-height: 95vh; margin: 10px; border-radius: 20px; border-bottom: 8px solid #222; padding: 20px; box-sizing: border-box; color: white; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        .screen { background: #fff; border-radius: 10px; color: #333; padding: 15px; min-height: 520px; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); overflow-y: auto; }
+        .hidden { display: none !important; }
+        .btn { padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; border: none; width: 100%; margin: 8px 0; font-size: 1rem; transition: 0.1s; }
+        .btn:active { transform: scale(0.97); }
+        .btn-blue { background: var(--blue); color: #fff; }
+        .btn-orange { background: var(--orange); color: #fff; }
+        .btn-gray { background: #eee; color: #333; border: 1px solid #ccc; }
+        .ito-card { width: 45px; height: 65px; border: 2px solid var(--blue); border-radius: 5px; display: inline-flex; flex-direction: column; justify-content: center; align-items: center; margin: 2px; font-weight: bold; background: white; }
+        .hand-area { width: 80px; height: 110px; background: var(--blue); color: white; margin: 10px auto; border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; font-size: 0.8rem; }
+        .num-view { position: absolute; width: 100%; height: 100%; background: #fff; border: 3px solid var(--blue); border-radius: 10px; color: var(--blue); font-size: 2.5rem; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; }
+        .hand-area:active .num-view { opacity: 1; }
+        .kw-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 10px 0; }
+        .kw-box { border: 1px solid var(--blue); padding: 10px 2px; border-radius: 5px; font-size: 0.75rem; background: #f9f9f9; text-align: center; font-weight: bold; }
+        .log-table { width: 100%; font-size: 0.7rem; border-collapse: collapse; margin-top: 15px; }
+        .log-table th, .log-table td { border: 1px solid #ddd; padding: 5px; text-align: center; }
+        .res-success { background: #e3f2fd; color: var(--blue); font-weight: bold; }
+        .res-intercept { background: #fff3e0; color: var(--orange); font-weight: bold; }
+        .reset-link { font-size: 0.7rem; color: #999; margin-top: 20px; cursor: pointer; text-decoration: underline; display: block; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div id="console-frame">
+    <div style="text-align:center; margin-bottom:10px; font-weight:bold; font-size: 0.7rem;">INIAD GAME CONSOLE V7.0</div>
+    <div class="screen">
+        <div id="view-login">
+            <h2 style="text-align:center; margin-top:60px;">SYSTEM BOOT</h2>
+            <input type="text" id="in-name" class="btn btn-gray" placeholder="ユーザー名" style="box-sizing: border-box;">
+            <button onclick="Core.login()" class="btn btn-blue">START</button>
+        </div>
+        <div id="view-portal" class="hidden">
+            <p id="u-display" style="font-weight:bold; color:var(--blue); border-bottom:1px solid #ddd; padding-bottom:5px;">User: ---</p>
+            <button onclick="Core.loadGame('ito')" class="btn btn-blue">🃏 Ito (100 Themes)</button>
+            <button onclick="Core.loadGame('de')" class="btn btn-orange">🔒 Decrypto</button>
+        </div>
+        <div id="view-game" class="hidden">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:10px;">
+                <button onclick="Core.eject()" style="border:none; background:none; cursor:pointer; color:#888;">◀ EJECT</button>
+                <div id="game-tag" style="background:#eee; font-size:0.7rem; padding:2px 10px; border-radius:10px; font-weight:bold;"></div>
+            </div>
+            <div id="game-content"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- CORE SYSTEM ---
+const firebaseConfig = { databaseURL: "https://noyu-d5611-default-rtdb.firebaseio.com/" };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const Core = {
+    user: "", currentGame: null,
+    login() {
+        this.user = document.getElementById('in-name').value.trim();
+        if(!this.user) return;
+        document.getElementById('u-display').innerText = "User: " + this.user;
+        this.show('view-portal');
+    },
+    show(id) {
+        ['view-login', 'view-portal', 'view-game'].forEach(v => document.getElementById(v).classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    },
+    loadGame(gid) {
+        this.currentGame = gid;
+        document.getElementById('game-tag').innerText = gid.toUpperCase();
+        this.show('view-game');
+        if(gid==='ito') Ito.init(); else Decrypto.init();
+    },
+    eject() {
+        db.ref(this.currentGame).off();
+        this.currentGame = null;
+        this.show('view-portal');
+    }
+};
+
+// --- ITO SYSTEM (100 Themes) ---
+const Ito = {
+    myNum: 0,
+    drawCount: 0,
+    themes: [
+        {n:"コンビニ商品", s:"1:安い ↔ 100:高い"}, {n:"なりたい職業", s:"1:不人気 ↔ 100:人気"}, {n:"武器の強さ", s:"1:弱い ↔ 100:強い"}, {n:"給食の人気メニュー", s:"1:不人気 ↔ 100:人気"}, {n:"怖いもの", s:"1:怖くない ↔ 100:怖い"}, {n:"モテる趣味", s:"1:モテない ↔ 100:モテる"}, {n:"最強の調味料", s:"1:弱い ↔ 100:強い"}, {n:"歴史上の人物", s:"1:無名 ↔ 100:偉大"}, {n:"無人島持参物", s:"1:不要 ↔ 100:必要"}, {n:"痛いケガ", s:"1:平気 ↔ 100:激痛"},
+        {n:"カッコいい苗字", s:"1:平凡 ↔ 100:最高"}, {n:"欲しい超能力", s:"1:地味 ↔ 100:最強"}, {n:"デート場所", s:"1:最悪 ↔ 100:最高"}, {n:"最強の動物", s:"1:弱い ↔ 100:強い"}, {n:"人生で大切なもの", s:"1:不要 ↔ 100:必須"}, {n:"嫌いな食べ物", s:"1:平気 ↔ 100:無理"}, {n:"泣ける映画", s:"1:笑える ↔ 100:号泣"}, {n:"住みたい場所", s:"1:嫌 ↔ 100:理想"}, {n:"カッコいい英単語", s:"1:ダサい ↔ 100:最高"}, {n:"一発芸の面白さ", s:"1:寒い ↔ 100:爆笑"},
+        {n:"貰って嬉しいプレゼント", s:"1:困る ↔ 100:嬉しい"}, {n:"強そうな漢字", s:"1:弱そう ↔ 100:強そう"}, {n:"美味しい飲み物", s:"1:不味い ↔ 100:最高"}, {n:"魔法の強さ", s:"1:初級 ↔ 100:禁忌"}, {n:"絶滅してほしい虫", s:"1:平気 ↔ 100:絶滅希望"}, {n:"歴史人物の凄さ", s:"1:微妙 ↔ 100:伝説"}, {n:"自分へのご褒美", s:"1:安価 ↔ 100:豪華"}, {n:"最強の必殺技", s:"1:弱小 ↔ 100:最強"}, {n:"休日の充実度", s:"1:無駄 ↔ 100:最高"}, {n:"学校の校則", s:"1:緩い ↔ 100:地獄"},
+        {n:"文房具の便利さ", s:"1:低い ↔ 100:高い"}, {n:"理想のプロポーズ", s:"1:最悪 ↔ 100:最高"}, {n:"コンビニのお菓子", s:"1:不人気 ↔ 100:人気"}, {n:"強そうなポケモン", s:"1:弱い ↔ 100:強い"}, {n:"一生食べ続けたいもの", s:"1:嫌 ↔ 100:理想"}, {n:"贅沢な時間", s:"1:無駄 ↔ 100:最高"}, {n:"身につけたいスキル", s:"1:不要 ↔ 100:必須"}, {n:"世界平和に必要なもの", s:"1:不要 ↔ 100:必須"}, {n:"宇宙人の怖さ", s:"1:怖くない ↔ 100:怖い"}, {n:"スポーツのハードさ", s:"1:楽 ↔ 100:キツイ"},
+        {n:"有名人の好感度", s:"1:低い ↔ 100:高い"}, {n:"朝ごはんのおかず", s:"1:不評 ↔ 100:好評"}, {n:"最強の盾", s:"1:脆い ↔ 100:硬い"}, {n:"お祭りの屋台", s:"1:不人気 ↔ 100:人気"}, {n:"好きな季節", s:"1:嫌い ↔ 100:好き"}, {n:"アプリの重要度", s:"1:低い ↔ 100:高い"}, {n:"憧れの家", s:"1:ボロい ↔ 100:豪華"}, {n:"カッコいい乗り物", s:"1:ダサい ↔ 100:最高"}, {n:"学校行事の楽しさ", s:"1:低い ↔ 100:高い"}, {n:"1日入れ替わりたい人", s:"1:嫌 ↔ 100:理想"},
+        {n:"最強のフルーツ", s:"1:不味い ↔ 100:最高"}, {n:"お風呂での考え事", s:"1:下らない ↔ 100:重要"}, {n:"好きなアイスの味", s:"1:不人気 ↔ 100:人気"}, {n:"カッコいい服のブランド", s:"1:ダサい ↔ 100:最高"}, {n:"ゾンビ用アイテム", s:"1:不要 ↔ 100:必要"}, {n:"理想の休日", s:"1:不満 ↔ 100:満足"}, {n:"便利な家電", s:"1:低い ↔ 100:高い"}, {n:"無敵になれる食べ物", s:"1:弱い ↔ 100:強い"}, {n:"タイムスリップ先", s:"1:嫌 ↔ 100:理想"}, {n:"好きな色", s:"1:嫌い ↔ 100:好き"},
+        {n:"カッコいい楽器", s:"1:ダサい ↔ 100:最高"}, {n:"最強のスープ", s:"1:不味い ↔ 100:最高"}, {n:"言われて嬉しい言葉", s:"1:無 ↔ 100:最高"}, {n:"将来の夢の大きさ", s:"1:小さい ↔ 100:巨大"}, {n:"好きな香水", s:"1:臭い ↔ 100:良い香り"}, {n:"一番面白いアニメ", s:"1:退屈 ↔ 100:爆笑"}, {n:"旅行先トラブル", s:"1:軽微 ↔ 100:絶望"}, {n:"最強のパン", s:"1:不味い ↔ 100:最高"}, {n:"放課後の過ごし方", s:"1:退屈 ↔ 100:最高"}, {n:"最強のトッピング", s:"1:不要 ↔ 100:必要"},
+        {n:"理想の先生", s:"1:嫌い ↔ 100:好き"}, {n:"自分にとっての贅沢", s:"1:質素 ↔ 100:豪華"}, {n:"好きなYouTuber", s:"1:誰 ↔ 100:神"}, {n:"カッコいい髪型", s:"1:ダサい ↔ 100:最高"}, {n:"一番疲れる掃除", s:"1:楽 ↔ 100:大変"}, {n:"最強のコンビ", s:"1:弱い ↔ 100:強い"}, {n:"欲しい車", s:"1:不要 ↔ 100:最高"}, {n:"一番緊張する場面", s:"1:余裕 ↔ 100:極限"}, {n:"一生の思い出", s:"1:忘れたい ↔ 100:宝物"}, {n:"最強のパスタ", s:"1:不味い ↔ 100:最高"},
+        {n:"好きな駅弁", s:"1:不人気 ↔ 100:人気"}, {n:"欲しい家具", s:"1:不要 ↔ 100:必須"}, {n:"理想の睡眠時間", s:"1:短い ↔ 100:長い"}, {n:"最高のラーメン屋", s:"1:不味い ↔ 100:最高"}, {n:"歴史的事件の凄さ", s:"1:地味 ↔ 100:衝撃"}, {n:"最強の野菜", s:"1:嫌い ↔ 100:好き"}, {n:"憧れの国", s:"1:嫌 ↔ 100:理想"}, {n:"一日の始まりの気分", s:"1:最悪 ↔ 100:最高"}, {n:"最強のおつまみ", s:"1:不味い ↔ 100:最高"}, {n:"避難用アイテム", s:"1:不要 ↔ 100:必須"},
+        {n:"誕生日プレゼント", s:"1:困る ↔ 100:嬉しい"}, {n:"一番欲しい服", s:"1:不要 ↔ 100:最高"}, {n:"最強の丼もの", s:"1:不味い ↔ 100:最高"}, {n:"自分の才能", s:"1:無 ↔ 100:天才"}, {n:"最高の温泉地", s:"1:嫌 ↔ 100:最高"}, {n:"スマホケース", s:"1:ダサい ↔ 100:最高"}, {n:"最強のご飯のお供", s:"1:不要 ↔ 100:必須"}, {n:"理想の家族像", s:"1:不幸 ↔ 100:幸福"}, {n:"今一番したいこと", s:"1:無 ↔ 100:切実"}, {n:"宝くじの使い道", s:"1:地味 ↔ 100:豪快"}
+    ],
+    init() {
+        document.getElementById('game-content').innerHTML = `
+            <div id="ito-setup"><h3>THEME SELECT</h3><button onclick="Ito.suggest()" class="btn btn-orange">お題を出す</button><div id="ito-opts"></div></div>
+            <div id="ito-play" class="hidden">
+                <div style="background:#f0f7ff; border:2px solid var(--blue); border-radius:10px; padding:10px; margin-bottom:15px;">
+                    <h2 id="it-n" style="text-align:center; margin:0; color:var(--blue);"></h2>
+                    <p id="it-s" style="text-align:center; font-size:0.9rem; font-weight:bold; margin:5px 0 0 0; color:#333;"></p>
+                </div>
+                <div id="it-field" style="text-align:center; min-height:80px;"></div>
+                <div id="it-msg" style="text-align:center; font-weight:bold; margin:10px;"></div>
+                <div id="it-notice" style="text-align:center; color:red; font-size:0.8rem; height:20px; margin-bottom:10px;"></div>
+                <div class="hand-area"><div id="it-mynum" class="num-view">?</div>HOLD</div>
+                <div id="it-control">
+                    <button id="it-draw" onclick="Ito.draw()" class="btn btn-blue">数字を引く</button>
+                    <div id="it-actions" class="hidden">
+                        <button onclick="Ito.draw()" class="btn btn-gray" style="margin-bottom:5px;">引き直す</button>
+                        <button onclick="Ito.submit()" class="btn btn-orange">カードを出す</button>
+                    </div>
+                </div>
+            </div>
+            <span onclick="Ito.reset()" class="reset-link">HARD RESET</span>`;
+        db.ref('ito').on('value', snap => {
+            const d = snap.val() || {};
+            if(d.config) {
+                document.getElementById('ito-setup').classList.add('hidden'); document.getElementById('ito-play').classList.remove('hidden');
+                document.getElementById('it-n').innerText = d.config.theme; document.getElementById('it-s').innerText = d.config.scale;
+            } else {
+                document.getElementById('ito-setup').classList.remove('hidden'); document.getElementById('ito-play').classList.add('hidden');
+                document.getElementById('ito-opts').innerHTML = (d.proposals||[]).map((p,i)=>`<button class="btn btn-gray" onclick="Ito.select(${i})">${p.n}</button>`).join('');
+                this.drawCount = 0; // リセット
+            }
+            // 通知の表示
+            const noticeEl = document.getElementById('it-notice');
+            if(d.lastRedraw && d.lastRedraw.user !== "none") {
+                noticeEl.innerText = `⚠️ ${d.lastRedraw.user}が${d.lastRedraw.count}回目の引き直し！`;
+            } else {
+                noticeEl.innerText = "";
+            }
+            const f = document.getElementById('it-field'); f.innerHTML = "";
+            if(d.cards) {
+                let last=0, fail=false;
+                Object.values(d.cards).sort((a,b)=>a.ts-b.ts).forEach(c => {
+                    if(c.num < last) fail = true;
+                    f.innerHTML += `<div class="ito-card" style="border-color:${fail?'red':'#004098'}"><span>${c.num}</span><small style="font-size:0.5rem;">${c.user}</small></div>`;
+                    last = c.num;
+                });
+                document.getElementById('it-msg').innerText = fail ? "FAILED" : "STABLE";
+            }
+        });
+    },
+    suggest() { db.ref('ito/proposals').set(this.themes.sort(()=>0.5-Math.random()).slice(0,3)); },
+    select(i) { db.ref('ito/proposals').once('value', s=>{ const p=s.val(); if(p) db.ref('ito/config').set({theme:p[i].n, scale:p[i].s}); }); },
+    draw() { 
+        this.myNum = Math.floor(Math.random()*100)+1; 
+        this.drawCount++;
+        document.getElementById('it-mynum').innerText = this.myNum; 
+        document.getElementById('it-draw').classList.add('hidden'); 
+        document.getElementById('it-actions').classList.remove('hidden'); 
+        // 全員に通知
+        if(this.drawCount > 1) {
+            db.ref('ito/lastRedraw').set({user: Core.user, count: this.drawCount});
+        }
+    },
+    submit() { 
+        db.ref('ito/cards').push({num:this.myNum, user:Core.user, ts:Date.now()}); 
+        db.ref('ito/lastRedraw').set({user: "none", count: 0}); // 通知を消す
+        document.getElementById('it-actions').classList.add('hidden'); 
+    },
+    reset() { if(confirm("RESET?")) db.ref('ito').remove(); }
+};
+// --- DECRYPTO SYSTEM (Fix V5.5) ---
+const Decrypto = {
+    role: "", isJudging: false,
+    wordsList: ["学校","リンゴ","宇宙","ギター","カメラ","寿司","電話","海","山","時計","本","鳥","花","靴","椅子","カレー","電車","公園","ピアノ","太陽","砂漠","冷蔵庫","眼鏡","月","映画","野球","ラーメン","秘密","お風呂","鍵"],
+    init() {
+        document.getElementById('game-content').innerHTML = `<div id="de-ui"><h3 id="de-r-view">Round -</h3><div id="de-roles"><button onclick="Decrypto.setRole('W')" class="btn btn-blue">白に参加 (<span id="cw">0</span>/2)</button><button onclick="Decrypto.setRole('B')" class="btn btn-orange">黒に参加 (<span id="cb">0</span>/1)</button></div><div id="de-board" class="hidden"><div id="de-info" style="font-size:0.75rem; font-weight:bold; color:var(--blue); margin-bottom:10px;"></div><div class="kw-grid"><div class="kw-box" id="dw1">?</div><div class="kw-box" id="dw2">?</div><div class="kw-box" id="dw3">?</div><div class="kw-box" id="dw4">?</div></div><div id="de-ctrl" style="padding:15px; background:#f4f4f4; border-radius:10px; margin-bottom:10px; border:1px solid #ddd;"></div><table class="log-table"><thead><tr><th>R</th><th>ヒント</th><th>正解</th><th>結果</th></tr></thead><tbody id="de-log"></tbody></table></div><span onclick="Decrypto.reset()" class="reset-link">HARD RESET</span></div>`;
+        this.listen();
+    },
+    listen() {
+        db.ref('de').on('value', snap => {
+            const d = snap.val() || {};
+            if(!d.words) { db.ref('de/words').set(this.wordsList.sort(()=>0.5-Math.random()).slice(0,4)); return; }
+            let found = "";
+            const keysW = d.roles?.W ? Object.keys(d.roles.W).sort() : [];
+            const memW = keysW.map(k => { if(d.roles.W[k]===Core.user) found="W"; return d.roles.W[k]; });
+            const keysB = d.roles?.B ? Object.keys(d.roles.B).sort() : [];
+            const memB = keysB.map(k => { if(d.roles.B[k]===Core.user) found="B"; return d.roles.B[k]; });
+            this.role = found;
+            document.getElementById('cw').innerText = memW.length;
+            document.getElementById('cb').innerText = memB.length;
+            if(!this.role) return;
+            document.getElementById('de-roles').classList.add('hidden');
+            document.getElementById('de-board').classList.remove('hidden');
+            const round = (d.logs ? Object.keys(d.logs).length : 0) + 1;
+            document.getElementById('de-r-view').innerText = `Round ${round}`;
+            d.words.forEach((w,i)=> document.getElementById('dw'+(i+1)).innerText = (this.role==='B'?'?':(i+1)+': '+w));
+            const maker = memW[(round - 1) % memW.length] || memW[0];
+            document.getElementById('de-info').innerText = `チーム: ${this.role==='W'?'白':'黒'} / 親: ${maker}`;
+            const ctrl = document.getElementById('de-ctrl');
+            if(!d.hints) {
+                if(this.role==='W' && Core.user === maker) {
+                    if(!d.code) db.ref('de/code').set([1,2,3,4].sort(()=>0.5-Math.random()).slice(0,3).join(''));
+                    ctrl.innerHTML = `暗号: <b style="font-size:1.5rem">${d.code||'..'}</b><br><input id="h1" class="btn btn-gray" placeholder="H1" style="width:30%"><input id="h2" class="btn btn-gray" placeholder="H2" style="width:30%"><input id="h3" class="btn btn-gray" placeholder="H3" style="width:30%"><button onclick="Decrypto.sendH()" class="btn btn-orange">ヒント送信</button>`;
+                } else { ctrl.innerHTML = `<center>${maker}が考え中...</center>`; }
+            } else {
+                if(this.role==='W' && Core.user!==maker && !d.ansW) {
+                    ctrl.innerHTML = `ヒント: ${d.hints}<br><input id="ain" type="number" class="btn btn-gray" placeholder="3桁回答"><button onclick="Decrypto.sendA('W')" class="btn btn-blue">連携回答</button>`;
+                } else if(this.role==='B' && !d.ansB) {
+                    ctrl.innerHTML = `ヒント: ${d.hints}<br><input id="ain" type="number" class="btn btn-gray" placeholder="3桁傍受"><button onclick="Decrypto.sendA('B')" class="btn btn-orange">攻撃</button>`;
+                } else {
+                    ctrl.innerHTML = `ヒント: ${d.hints}<br><div style="font-size:0.7rem; color:#666; text-align:center;">回答待機中...</div>`;
+                }
+                if(d.ansW && d.ansB && Core.user===maker && d.code && !this.isJudging) { this.isJudging = true; this.judge(round, d); }
+            }
+            const lb = document.getElementById('de-log'); lb.innerHTML = "";
+            if(d.logs) Object.values(d.logs).reverse().forEach(l => {
+                lb.innerHTML += `<tr class="${l.res.includes('成功')?'res-success':''}"><td>${l.r}</td><td>${l.h}</td><td>${l.c}</td><td>${l.res}</td></tr>`;
+            });
+        });
+    },
+    setRole(r) { db.ref('de/roles/'+r).push(Core.user); },
+    sendH() { const h = [document.getElementById('h1').value, document.getElementById('h2').value, document.getElementById('h3').value].join(' / '); if(h.length>5) db.ref('de/hints').set(h); },
+    sendA(t) { const v = document.getElementById('ain').value; if(v.length===3) db.ref('de/ans'+t).set(v); },
+    judge(r, d) {
+        const bOk = (String(d.ansB)===String(d.code)), wOk = (String(d.ansW)===String(d.code));
+        let res = (bOk && wOk) ? "攻撃&連携成功" : (bOk ? "攻撃成功(黒)" : (wOk ? "連携成功(白)" : "両者失敗"));
+        const up = {}; up[`de/logs/r${Date.now()}`] = { r:r, h:d.hints, c:d.code, res:res };
+        up[`de/hints`] = null; up[`de/ansW`] = null; up[`de/ansB`] = null; up[`de/code`] = null;
+        db.ref().update(up).then(() => this.isJudging = false);
+    },
+    reset() { if(confirm("RESET?")) db.ref('de').remove(); }
+};
+</script>
+</body>
+</html>
