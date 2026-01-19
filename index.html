@@ -175,40 +175,32 @@ const Ito = {
 // --- DECRYPTO SYSTEM (Fix V5.5) ---
 const Decrypto = {
     role: "", isJudging: false,
-    // 抽象的な概念（自由、時間、夢など）を混ぜた全150語
-    wordsList: ["学校","リンゴ","宇宙","ギター","カメラ","寿司","電話","海","山","時計","本","鳥","花","靴","椅子","カレー","電車","公園","ピアノ","太陽","砂漠","冷蔵庫","眼鏡","月","映画","野球","ラーメン","秘密","お風呂","鍵","飛行機","おにぎり","忍者","魔法","ロボット","トランプ","森","病院","パンダ","花火","幽霊","カニ","辞書","宝箱","ペンギン","地図","手紙","洗濯機","城","恐竜","傘","風船","消しゴム","砂場","望遠鏡","トースター","切手","歯ブラシ","信号機","扇風機","カブトムシ","教科書","コンパス","化石","焚き火","潜水艦","ハンバーグ","遊園地","図書館","水族館","キャンプ","自転車","サッカー","金魚","流れ星","手袋","マスク","マント","懐中電灯","大仏","ピザ","神社","お寺","砂時計","浮輪","鏡","宝石","剣","盾","王冠","雪だるま","ヘリコプター","サボテン","金庫","真珠","万華鏡","地球儀","鉛筆削り","方位磁石","目覚まし時計","扇子","打ち上げ花火","クリップ","パズル",
-    "愛","自由","正義","平和","未来","過去","希望","孤独","勇気","恐怖","欲望","理性","本能","伝統","進化","芸術","運命","奇跡","沈黙","嫉妬","信頼","誇り","情熱","理想","現実","挑戦","勝利","敗北","永遠","瞬間"],
+    wordsList: ["学校","リンゴ","宇宙","ギター","カメラ","寿司","電話","海","山","時計","本","鳥","花","靴","椅子","カレー","電車","公園","ピアノ","太陽","砂漠","冷蔵庫","眼鏡","月","映画","野球","ラーメン","秘密","お風呂","鍵","飛行機","おにぎり","忍者","魔法","ロボット","トランプ","森","病院","パンダ","花火","幽霊","カニ","辞書","宝箱","ペンギン","地図","手紙","洗濯機","城","恐竜","傘","風船","消しゴム","砂場","望遠鏡","トースター","切手","歯ブラシ","信号機","扇風機","カブトムシ","教科書","コンパス","化石","焚き火","潜水艦","ハンバーグ","遊園地","図書館","水族館","キャンプ","自転車","サッカー","金魚","流れ星","手袋","マスク","マント","懐中電灯","大仏","ピザ","神社","お寺","砂時計","浮輪","鏡","宝石","剣","盾","王冠","雪だるま","ヘリコプター","サボテン","金庫","真珠","万華鏡","地球儀","鉛筆削り","方位磁石","目覚まし時計","扇子","打ち上げ花火","クリップ","パズル","愛","自由","正義","平和","未来","過去","希望","孤独","勇気","恐怖","欲望","理性","本能","伝統","進化","芸術","運命","奇跡","沈黙","嫉妬","信頼","誇り","情熱","理想","現実","挑戦","勝利","敗北","永遠","瞬間"],
     init() {
         document.getElementById('game-content').innerHTML = `
             <div id="de-ui">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
                     <h3 id="de-r-view" style="margin:0;">DECRYPTO</h3>
                     <div id="de-chips" style="font-size:0.8rem; font-weight:bold;">
-                        <span style="color:var(--orange);">黒撃: <span id="chip-b">0</span>/2</span> | 
-                        <span style="color:var(--blue);">白ミス: <span id="chip-w">0</span>/2</span>
+                        <span style="color:var(--orange);">黒撃: <span id="chip-b">0</span>/2</span> | <span style="color:var(--blue);">白ミス: <span id="chip-w">0</span>/2</span>
                     </div>
                 </div>
                 <div id="de-setup" style="text-align:center; padding:15px; background:#f0f0f0; border-radius:10px; border:2px solid #ccc;">
                     <div style="display:flex; justify-content:space-around; margin-bottom:15px;">
-                        <div style="width:45%; background:white; border:2px solid var(--blue); border-radius:8px; padding:10px;">
-                            <h4 style="color:var(--blue); margin:0 0 10px 0;">WHITE TEAM</h4>
-                            <div id="list-w" style="font-size:0.85rem; min-height:50px; color:#333;"></div>
-                            <button onclick="Decrypto.move('W')" class="btn btn-blue" style="width:100%; font-size:0.8rem;">入る</button>
-                        </div>
-                        <div style="width:45%; background:white; border:2px solid var(--orange); border-radius:8px; padding:10px;">
-                            <h4 style="color:var(--orange); margin:0 0 10px 0;">BLACK TEAM</h4>
-                            <div id="list-b" style="font-size:0.85rem; min-height:50px; color:#333;"></div>
-                            <button onclick="Decrypto.move('B')" class="btn btn-orange" style="width:100%; font-size:0.8rem;">入る</button>
-                        </div>
+                        <div style="width:45%; background:white; border:2px solid var(--blue); border-radius:8px; padding:10px;"><h4 style="color:var(--blue); margin:0 0 10px 0;">WHITE</h4><div id="list-w" style="font-size:0.85rem; min-height:50px; color:#333;"></div><button onclick="Decrypto.move('W')" class="btn btn-blue" style="width:100%; font-size:0.8rem;">入る</button></div>
+                        <div style="width:45%; background:white; border:2px solid var(--orange); border-radius:8px; padding:10px;"><h4 style="color:var(--orange); margin:0 0 10px 0;">BLACK</h4><div id="list-b" style="font-size:0.85rem; min-height:50px; color:#333;"></div><button onclick="Decrypto.move('B')" class="btn btn-orange" style="width:100%; font-size:0.8rem;">入る</button></div>
                     </div>
-                    <p id="de-ready-msg" style="font-size:0.75rem; color:red; font-weight:bold;"></p>
                     <button id="de-start-btn" onclick="Decrypto.startGame()" class="btn btn-gray" style="width:80%;" disabled>GAME START</button>
                 </div>
                 <div id="de-board" class="hidden">
                     <div id="de-info" style="text-align:center; font-size:0.8rem; font-weight:bold; padding:5px; border-radius:5px; margin-bottom:10px;"></div>
+                    <div id="de-history" style="display:flex; gap:3px; margin-bottom:10px;">
+                        ${[1,2,3,4].map(i => `<div style="flex:1; background:#fff; border:1px solid #ddd; font-size:0.6rem; padding:3px; border-radius:4px; min-height:60px;"><b>${i}:<span id="h-kw${i}">?</span></b><div id="hl${i}" style="color:#666; font-size:0.55rem; line-height:1.1; margin-top:2px;"></div></div>`).join('')}
+                    </div>
                     <div class="kw-grid"><div class="kw-box" id="dw1">?</div><div class="kw-box" id="dw2">?</div><div class="kw-box" id="dw3">?</div><div class="kw-box" id="dw4">?</div></div>
-                    <div id="de-ctrl" style="padding:15px; background:#f4f4f4; border-radius:10px; margin-bottom:10px; border:1px solid #ddd;"></div>
-                    <table class="log-table"><thead><tr><th>R</th><th>ヒント</th><th>正解</th><th>結果</th></tr></thead><tbody id="de-log"></tbody></table>
+                    <div id="black-memo-area" class="hidden" style="margin-top:10px;"><input id="de-memo" oninput="Decrypto.saveMemo()" placeholder="黒チーム共有メモ..." style="width:100%; font-size:0.7rem; padding:5px; border:1px solid var(--orange); border-radius:5px; background:#fff8f4;"></div>
+                    <div id="de-ctrl" style="padding:15px; background:#f4f4f4; border-radius:10px; margin-top:10px; border:1px solid #ddd;"></div>
+                    <table class="log-table" style="font-size:0.65rem; margin-top:10px;"><thead><tr><th>R</th><th>ヒント</th><th>正解</th><th>白/黒</th></tr></thead><tbody id="de-log"></tbody></table>
                 </div>
                 <span onclick="Decrypto.reset()" class="reset-link">HARD RESET</span>
             </div>`;
@@ -218,97 +210,82 @@ const Decrypto = {
         db.ref('de').on('value', snap => {
             const d = snap.val() || {};
             if(!d.words) { db.ref('de/words').set(this.wordsList.sort(()=>0.5-Math.random()).slice(0,4)); return; }
-            const players = d.players || {};
-            const members = Object.entries(players);
+            const players = d.players || {}, members = Object.entries(players);
             const whiteTeam = members.filter(p => p[1].team === 'W').map(p => p[1].name);
             const blackTeam = members.filter(p => p[1].team === 'B').map(p => p[1].name);
-
-            // チップ監視・終了判定
-            const bChips = d.blackChips || 0;
-            const wChips = d.whiteChips || 0;
-            document.getElementById('chip-b').innerText = bChips;
-            document.getElementById('chip-w').innerText = wChips;
-            if(bChips >= 2) { alert("黒の勝利！(傍受2回成功)"); this.reset(); return; }
-            if(wChips >= 2) { alert("白の敗北！(ミス2回)"); this.reset(); return; }
+            const bChips = d.blackChips || 0, wChips = d.whiteChips || 0;
+            document.getElementById('chip-b').innerText = bChips; document.getElementById('chip-w').innerText = wChips;
+            if(bChips >= 2) { alert("黒チーム勝利！(傍受2)"); this.reset(); return; }
+            if(wChips >= 2) { alert("白チーム敗北！(ミス2)"); this.reset(); return; }
 
             if(!d.started) {
-                document.getElementById('de-setup').classList.remove('hidden');
-                document.getElementById('de-board').classList.add('hidden');
-                document.getElementById('list-w').innerText = whiteTeam.join(', ');
-                document.getElementById('list-b').innerText = blackTeam.join(', ');
+                document.getElementById('de-setup').classList.remove('hidden'); document.getElementById('de-board').classList.add('hidden');
+                document.getElementById('list-w').innerText = whiteTeam.join(', '); document.getElementById('list-b').innerText = blackTeam.join(', ');
                 const canStart = whiteTeam.length >= 2 && blackTeam.length >= 1;
-                const sBtn = document.getElementById('de-start-btn');
-                sBtn.disabled = !canStart;
-                sBtn.className = canStart ? "btn btn-orange" : "btn btn-gray";
-                document.getElementById('de-ready-msg').innerText = canStart ? "準備完了！" : "白2名・黒1名以上で開始可能";
+                const sBtn = document.getElementById('de-start-btn'); sBtn.disabled = !canStart; sBtn.className = canStart ? "btn btn-orange" : "btn btn-gray";
                 if(!members.find(p => p[1].uid === Core.user)) db.ref('de/players').push({uid: Core.user, name: Core.user, team: 'W'});
                 return;
             }
 
-            document.getElementById('de-setup').classList.add('hidden');
-            document.getElementById('de-board').classList.remove('hidden');
-            const me = members.find(p => p[1].uid === Core.user);
-            this.role = me ? me[1].team : "";
-            
-            // チームカラー演出
-            const infoEl = document.getElementById('de-info');
-            infoEl.style.background = this.role==='W' ? '#eef6ff' : '#fff4ee';
-            infoEl.style.color = this.role==='W' ? 'var(--blue)' : 'var(--orange)';
-
+            document.getElementById('de-setup').classList.add('hidden'); document.getElementById('de-board').classList.remove('hidden');
+            const me = members.find(p => p[1].uid === Core.user); this.role = me ? me[1].team : "";
             const round = (d.logs ? Object.keys(d.logs).length : 0) + 1;
             document.getElementById('de-r-view').innerText = `Round ${round}`;
-            d.words.forEach((w,i)=> document.getElementById('dw'+(i+1)).innerText = (this.role==='B'?'?':(i+1)+': '+w));
+            
+            // 単語と履歴の更新
+            const hists = {1:[], 2:[], 3:[], 4:[]};
+            if(d.logs) Object.values(d.logs).forEach(l => {
+                const hs = l.h.split(' / '), cs = String(l.c).split('');
+                cs.forEach((num, idx) => { if(hists[num]) hists[num].push(hs[idx]); });
+            });
+            [1,2,3,4].forEach(i => {
+                document.getElementById('dw'+i).innerText = (this.role==='W' ? i+': '+d.words[i-1] : '?');
+                document.getElementById('h-kw'+i).innerText = (this.role==='W' ? d.words[i-1] : '?');
+                document.getElementById('hl'+i).innerText = hists[i].join(', ');
+            });
 
-            const myTeam = (this.role==='W') ? whiteTeam : blackTeam;
-            const maker = myTeam[(round - 1) % myTeam.length];
-            infoEl.innerText = `TEAM: ${this.role==='W'?'WHITE':'BLACK'} / MAKER: ${maker}`;
+            // 黒チーム専用メモの同期
+            const memoArea = document.getElementById('black-memo-area');
+            if(this.role==='B') { memoArea.classList.remove('hidden'); document.getElementById('de-memo').value = d.memo || ""; }
+            else { memoArea.classList.add('hidden'); }
+
+            const maker = whiteTeam[(round - 1) % whiteTeam.length];
+            const infoEl = document.getElementById('de-info');
+            infoEl.innerText = `チーム: ${this.role==='W'?'白':'黒'} / 親: ${maker}`;
+            infoEl.style.background = (this.role==='W' ? '#eef6ff' : '#fff4ee');
 
             const ctrl = document.getElementById('de-ctrl');
             if(!d.hints) {
-                if(Core.user === maker) {
+                if(this.role==='W' && Core.user === maker) {
                     if(!d.code) db.ref('de/code').set([1,2,3,4].sort(()=>0.5-Math.random()).slice(0,3).join(''));
-                    ctrl.innerHTML = `暗号: <b style="font-size:1.8rem">${d.code||'..'}</b><br><div style="display:flex; gap:5px; margin-top:10px;"><input id="h1" class="btn btn-gray" placeholder="H1" style="width:33%"><input id="h2" class="btn btn-gray" placeholder="H2" style="width:33%"><input id="h3" class="btn btn-gray" placeholder="H3" style="width:33%"></div><button onclick="Decrypto.sendH()" class="btn btn-orange" style="width:100%; margin-top:10px;">ヒント送信</button>`;
-                } else { ctrl.innerHTML = `<center><div class="spinner"></div>${maker}が考え中...</center>`; }
+                    ctrl.innerHTML = `暗号: <b style="font-size:1.8rem; color:red;">${d.code||'..'}</b><div style="display:flex; gap:5px; margin-top:10px;"><input id="h1" class="btn btn-gray" placeholder="H1" style="width:33%"><input id="h2" class="btn btn-gray" placeholder="H2" style="width:33%"><input id="h3" class="btn btn-gray" placeholder="H3" style="width:33%"></div><button onclick="Decrypto.sendH()" class="btn btn-orange" style="width:100%; margin-top:10px;">ヒント送信</button>`;
+                } else { ctrl.innerHTML = `<center>白の親「${maker}」が考え中...</center>`; }
             } else {
-                if(Core.user!==maker && !d.ansW && this.role==='W') {
-                    ctrl.innerHTML = `ヒント: <b style="color:var(--blue)">${d.hints}</b><br><input id="ain" type="number" class="btn btn-gray" placeholder="3桁回答" style="width:100%; margin:10px 0;"><button onclick="Decrypto.sendA('W')" class="btn btn-blue" style="width:100%;">連携回答</button>`;
-                } else if(!d.ansB && this.role==='B') {
-                    ctrl.innerHTML = `ヒント: <b style="color:var(--orange)">${d.hints}</b><br><input id="ain" type="number" class="btn btn-gray" placeholder="3桁傍受" style="width:100%; margin:10px 0;"><button onclick="Decrypto.sendA('B')" class="btn btn-orange" style="width:100%;">攻撃</button>`;
-                } else {
-                    ctrl.innerHTML = `ヒント: ${d.hints}<br><div style="font-size:0.7rem; color:#666; text-align:center; margin-top:10px;">相手や味方の回答を待っています...</div>`;
-                }
-                if(d.ansW && d.ansB && Core.user===maker && d.code && !this.isJudging) { this.isJudging = true; this.judge(round, d); }
+                if(this.role==='W' && Core.user!==maker && !d.ansW) {
+                    ctrl.innerHTML = `ヒント: <b>${d.hints}</b><input id="ain" type="number" class="btn btn-gray" placeholder="3桁回答" style="width:100%; margin:10px 0;"><button onclick="Decrypto.sendA('W')" class="btn btn-blue" style="width:100%;">連携回答</button>`;
+                } else if(this.role==='B' && !d.ansB) {
+                    ctrl.innerHTML = `ヒント: <b>${d.hints}</b><input id="ain" type="number" class="btn btn-gray" placeholder="3桁傍受" style="width:100%; margin:10px 0;"><button onclick="Decrypto.sendA('B')" class="btn btn-orange" style="width:100%;">傍受攻撃</button>`;
+                } else { ctrl.innerHTML = `<center>ヒント: ${d.hints}<br><small>回答待機中...</small></center>`; }
+                if(Core.user===maker && d.ansW && d.ansB && !this.isJudging) { this.isJudging = true; this.judge(round, d); }
             }
             const lb = document.getElementById('de-log'); lb.innerHTML = "";
             if(d.logs) Object.values(d.logs).reverse().forEach(l => {
-                lb.innerHTML += `<tr class="${l.res.includes('成功')?'res-success':''}"><td>${l.r}</td><td>${l.h}</td><td>${l.c}</td><td>${l.res}</td></tr>`;
+                lb.innerHTML += `<tr><td>${l.r}</td><td>${l.h}</td><td>${l.c}</td><td>白:${l.wRes} / 黒:${l.bRes}</td></tr>`;
             });
         });
     },
-    move(t) {
-        db.ref('de/players').once('value', snap => {
-            const p = snap.val() || {};
-            const k = Object.keys(p).find(i => p[i].uid === Core.user);
-            if(k) db.ref(`de/players/${k}/team`).set(t);
-        });
-    },
+    saveMemo() { const v = document.getElementById('de-memo').value; db.ref('de/memo').set(v); },
     startGame() { 
         const code = [1,2,3,4].sort(()=>0.5-Math.random()).slice(0,3).join('');
-        db.ref('de').update({ started: true, code: code, blackChips: 0, whiteChips: 0 }); 
+        db.ref('de').update({ started: true, code: code, blackChips: 0, whiteChips: 0, memo: "" }); 
     },
-    sendH() { 
-        const h = [document.getElementById('h1').value, document.getElementById('h2').value, document.getElementById('h3').value].join(' / ');
-        if(h.length > 5) db.ref('de/hints').set(h); 
-    },
+    sendH() { const h = [document.getElementById('h1').value, document.getElementById('h2').value, document.getElementById('h3').value].join(' / '); if(h.length > 5) db.ref('de/hints').set(h); },
     sendA(t) { const v = document.getElementById('ain').value; if(v.length===3) db.ref('de/ans'+t).set(v); },
     judge(r, d) {
         const bOk = (String(d.ansB)===String(d.code)), wOk = (String(d.ansW)===String(d.code));
-        let res = (bOk && wOk) ? "攻撃&連携成功" : (bOk ? "攻撃成功(黒)" : (wOk ? "連携成功(白)" : "両者失敗"));
-        const next = [1,2,3,4].sort(()=>0.5-Math.random()).slice(0,3).join('');
-        const up = {};
-        up[`de/logs/r${Date.now()}`] = { r:r, h:d.hints, c:d.code, res:res };
-        up[`de/hints`] = null; up[`de/ansW`] = null; up[`de/ansB`] = null; 
-        up[`de/code`] = next;
+        const up = {}; up[`de/logs/r${Date.now()}`] = { r: r, h: d.hints, c: d.code, wRes: wOk?"○":"×", bRes: bOk?"○":"×" };
+        up[`de/hints`] = null; up[`de/ansW`] = null; up[`de/ansB`] = null;
+        up[`de/code`] = [1,2,3,4].sort(()=>0.5-Math.random()).slice(0,3).join('');
         up[`de/blackChips`] = (d.blackChips || 0) + (bOk ? 1 : 0);
         up[`de/whiteChips`] = (d.whiteChips || 0) + (wOk ? 0 : 1);
         db.ref().update(up).then(() => this.isJudging = false);
