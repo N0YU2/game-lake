@@ -51,7 +51,7 @@
             <p id="u-display" style="font-weight:bold; color:var(--blue); border-bottom:1px solid #ddd; padding-bottom:5px;">User: ---</p>
             <button onclick="Core.loadGame('ito')" class="btn btn-blue">🃏 Ito (100 Themes)</button>
             <button onclick="Core.loadGame('de')" class="btn btn-orange">🔒 Decrypto</button>
-            <button onclick="Core.loadGame('kd')" class="btn btn-gray">Hannin wa Odoru</button>
+            <button onclick="Core.loadGame('kd')" class="btn btn-gray">犯人は踊る</button>
         </div>
         <div id="view-game" class="hidden">
             <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:10px;">
@@ -305,18 +305,18 @@ const Decrypto = {
 // --- HANNIN WA ODORU ---
 const KillerDance = {
     cardDefs: {
-        discoverer: { label: "First Finder", desc: "Play this to begin and announce the incident." },
-        civilian: { label: "Civilian", desc: "No effect." },
-        rumor: { label: "Rumor", desc: "Everyone draws 1 random card from the player on their right." },
-        trade: { label: "Trade", desc: "Exchange 1 card with another player." },
-        witness: { label: "Witness", desc: "Look at all cards in 1 player's hand." },
-        infoControl: { label: "Info Control", desc: "Everyone passes 1 chosen card to the player on their left." },
-        alibi: { label: "Alibi", desc: "If you have this with Culprit, Detective cannot catch you." },
-        scheme: { label: "Scheme", desc: "You join the culprit side. If culprit wins, you win too." },
-        boy: { label: "Boy", desc: "Privately learn who currently holds the Culprit card." },
-        dog: { label: "Dog", desc: "Pick 1 card from a player's hand. If it is Culprit, you win." },
-        detective: { label: "Detective", desc: "Guess 1 player. If they are the culprit, you win. No effect in round 1." },
-        culprit: { label: "Culprit", desc: "Can only be played as your last card. If played, culprit side wins." }
+        discoverer: { label: "第一発見者", desc: "このカードを出してゲームを始め、事件を宣言します。" },
+        civilian: { label: "一般人", desc: "効果はありません。" },
+        rumor: { label: "うわさ", desc: "全員が右隣の人の手札からランダムに1枚引きます。" },
+        trade: { label: "取り引き", desc: "誰か1人と手札1枚を交換します。" },
+        witness: { label: "目撃者", desc: "誰か1人の手札をすべて見ます。" },
+        infoControl: { label: "情報操作", desc: "全員が左隣の人へ選んだ1枚を渡します。" },
+        alibi: { label: "アリバイ", desc: "犯人カードと一緒に持っていると探偵に捕まりません。" },
+        scheme: { label: "たくらみ", desc: "犯人側に加わります。犯人が勝てば一緒に勝ちます。" },
+        boy: { label: "少年", desc: "犯人カードを持っている人を自分だけ確認します。" },
+        dog: { label: "いぬ", desc: "誰か1人の手札1枚を選び、犯人カードなら勝利です。" },
+        detective: { label: "探偵", desc: "誰か1人を指名し、犯人なら勝利です。1周目は無効です。" },
+        culprit: { label: "犯人", desc: "最後の1枚のときだけ出せます。出せたら犯人側の勝利です。" }
     },
     allCards: [
         "discoverer",
@@ -344,12 +344,12 @@ const KillerDance = {
         document.getElementById('game-content').innerHTML = `
             <div id="kd-wrap">
                 <div id="kd-lobby" class="kd-panel">
-                    <h3 style="margin-top:0;">Hannin wa Odoru</h3>
-                    <p style="font-size:0.85rem; margin-top:0;">Rule-based implementation for 3-8 players.</p>
+                    <h3 style="margin-top:0;">犯人は踊る</h3>
+                    <p style="font-size:0.85rem; margin-top:0;">3人から8人向けのルール準拠実装です。</p>
                     <div id="kd-players" style="margin-bottom:10px;"></div>
                     <div class="kd-row">
-                        <button onclick="KillerDance.join()" class="btn btn-blue" style="flex:1;">Join</button>
-                        <button onclick="KillerDance.start()" class="btn btn-orange" style="flex:1;">Start</button>
+                        <button onclick="KillerDance.join()" class="btn btn-blue" style="flex:1;">参加する</button>
+                        <button onclick="KillerDance.start()" class="btn btn-orange" style="flex:1;">ゲーム開始</button>
                     </div>
                 </div>
                 <div id="kd-board" class="hidden">
@@ -359,23 +359,23 @@ const KillerDance = {
                         <div id="kd-incident" style="font-size:0.85rem; margin-top:8px; color:#555;"></div>
                     </div>
                     <div class="kd-panel">
-                        <div style="font-weight:bold; margin-bottom:8px;">Players</div>
+                        <div style="font-weight:bold; margin-bottom:8px;">プレイヤー</div>
                         <div id="kd-player-list"></div>
                     </div>
                     <div class="kd-panel">
-                        <div style="font-weight:bold; margin-bottom:8px;">Private Info</div>
+                        <div style="font-weight:bold; margin-bottom:8px;">あなたへの情報</div>
                         <div id="kd-secret" style="font-size:0.85rem;"></div>
                     </div>
                     <div class="kd-panel">
-                        <div style="font-weight:bold; margin-bottom:8px;">Action</div>
+                        <div style="font-weight:bold; margin-bottom:8px;">アクション</div>
                         <div id="kd-action" style="font-size:0.85rem;"></div>
                     </div>
                     <div class="kd-panel">
-                        <div style="font-weight:bold; margin-bottom:8px;">Hand</div>
+                        <div style="font-weight:bold; margin-bottom:8px;">手札</div>
                         <div id="kd-hand"></div>
                     </div>
                     <div class="kd-panel">
-                        <div style="font-weight:bold; margin-bottom:8px;">Log</div>
+                        <div style="font-weight:bold; margin-bottom:8px;">ログ</div>
                         <div id="kd-log" class="kd-log"></div>
                     </div>
                 </div>
@@ -391,8 +391,8 @@ const KillerDance = {
             const meEntry = entries.find(([, p]) => p.uid === Core.user);
             const myId = meEntry ? meEntry[0] : null;
             document.getElementById('kd-players').innerHTML = entries.length
-                ? entries.map(([, p], idx) => `<span class="kd-pill">${idx + 1}. ${p.name}${p.uid===Core.user ? " (you)" : ""}</span>`).join("")
-                : '<span style="color:#666;">No players yet.</span>';
+                ? entries.map(([, p], idx) => `<span class="kd-pill">${idx + 1}. ${p.name}${p.uid===Core.user ? " (あなた)" : ""}</span>`).join("")
+                : '<span style="color:#666;">まだ参加者がいません。</span>';
             if(!state.started) {
                 document.getElementById('kd-lobby').classList.remove('hidden');
                 document.getElementById('kd-board').classList.add('hidden');
@@ -408,57 +408,57 @@ const KillerDance = {
             const isMyTurn = myId && myId === currentId && !state.pending && !state.winner;
             document.getElementById('kd-status').innerHTML = state.winner
                 ? `<span class="kd-danger">${state.winner.message}</span>`
-                : `Current turn: ${currentPlayer ? currentPlayer.name : "-"}`;
+                : `現在の手番: ${currentPlayer ? currentPlayer.name : "-"}`;
             document.getElementById('kd-turn').innerText = state.winner
-                ? "Game over"
-                : `${isMyTurn ? "Your turn." : "Waiting for another player."} Turn count: ${state.turnsPlayed || 0}`;
-            document.getElementById('kd-incident').innerText = state.incident ? `Incident: ${state.incident}` : "Incident not announced yet.";
+                ? "ゲーム終了"
+                : `${isMyTurn ? "あなたの手番です。" : "ほかのプレイヤーを待っています。"} 手番数: ${state.turnsPlayed || 0}`;
+            document.getElementById('kd-incident').innerText = state.incident ? `事件: ${state.incident}` : "事件はまだ宣言されていません。";
             document.getElementById('kd-player-list').innerHTML = order.map((id, idx) => {
                 const player = players[id];
                 const count = state.hands && state.hands[id] ? state.hands[id].length : 0;
                 return `<div class="kd-card" style="margin:6px 0; padding:8px;">
                     <div style="font-weight:bold;">${idx + 1}. ${player ? player.name : id}</div>
-                    <div style="font-size:0.8rem; color:#555;">Cards: ${count}${id === currentId && !state.winner ? " / active" : ""}</div>
+                    <div style="font-size:0.8rem; color:#555;">手札枚数: ${count}${id === currentId && !state.winner ? " / 手番中" : ""}</div>
                 </div>`;
             }).join("");
             const privateInfo = myId && state.privateInfo ? state.privateInfo[myId] : "";
             const secretBits = [];
-            if(this.isCulprit(myHand)) secretBits.push("You are currently the culprit.");
-            else if(myHand.includes("culprit")) secretBits.push("You hold the Culprit card, but Alibi keeps you from counting as the culprit.");
-            if(myHand.includes("scheme")) secretBits.push("You can still join the culprit side if Scheme is played.");
+            if(this.isCulprit(myHand)) secretBits.push("今のあなたは犯人です。");
+            else if(myHand.includes("culprit")) secretBits.push("犯人カードを持っていますが、アリバイがあるので犯人扱いではありません。");
+            if(myHand.includes("scheme")) secretBits.push("たくらみを持っているので犯人側勝利に乗れます。");
             if(privateInfo) secretBits.push(privateInfo);
-            document.getElementById('kd-secret').innerText = secretBits.join(" ") || "No private info yet.";
+            document.getElementById('kd-secret').innerText = secretBits.join(" ") || "まだ個別情報はありません。";
             document.getElementById('kd-action').innerHTML = this.renderActionArea(state, myId, myHand);
             document.getElementById('kd-hand').innerHTML = myHand.length
                 ? myHand.map((card, idx) => {
                     const meta = this.cardDefs[card];
                     const disabled = (!isMyTurn || state.winner || !this.canPlayCard(state, myId, card, myHand)) ? "disabled" : "";
-                    return `<div class="kd-card"><div style="font-weight:bold;">${meta.label}</div><div style="font-size:0.82rem; color:#555;">${meta.desc}</div><button class="btn btn-blue" ${disabled} onclick="KillerDance.play(${idx})">Play</button></div>`;
+                    return `<div class="kd-card"><div style="font-weight:bold;">${meta.label}</div><div style="font-size:0.82rem; color:#555;">${meta.desc}</div><button class="btn btn-blue" ${disabled} onclick="KillerDance.play(${idx})">このカードを出す</button></div>`;
                 }).join("")
-                : '<div style="color:#666;">No cards in hand.</div>';
+                : '<div style="color:#666;">手札がありません。</div>';
             const logs = Object.values(state.log || {}).slice(-10).reverse();
             document.getElementById('kd-log').innerHTML = logs.length
                 ? logs.map(item => `<div>${item}</div>`).join("")
-                : '<div style="color:#666;">No logs yet.</div>';
+                : '<div style="color:#666;">まだログがありません。</div>';
         });
     },
     renderActionArea(state, myId, myHand) {
-        if(state.winner) return "Winner already decided.";
-        if(!myId) return "Join the room first.";
+        if(state.winner) return "勝敗はすでに確定しています。";
+        if(!myId) return "先に参加してください。";
         if(state.pending) {
-            if(state.pending.type === "trade" && state.pending.targetId === myId) return `<button class="btn btn-orange" onclick="KillerDance.respondTrade()">Choose trade card</button>`;
+            if(state.pending.type === "trade" && state.pending.targetId === myId) return `<button class="btn btn-orange" onclick="KillerDance.respondTrade()">交換するカードを選ぶ</button>`;
             if(state.pending.type === "infoControl") {
                 const done = state.pending.choices && Object.prototype.hasOwnProperty.call(state.pending.choices, myId);
-                if(!done && myHand.length) return `<button class="btn btn-orange" onclick="KillerDance.respondInfoControl()">Choose left-pass card</button>`;
-                return done ? "You already answered. Waiting for others." : "Resolving info control.";
+                if(!done && myHand.length) return `<button class="btn btn-orange" onclick="KillerDance.respondInfoControl()">左隣に渡すカードを選ぶ</button>`;
+                return done ? "あなたの選択は済みました。ほかのプレイヤー待ちです。" : "情報操作を処理中です。";
             }
-            return "Resolving effect.";
+            return "効果を解決中です。";
         }
         const order = state.turnOrder || [];
         const currentId = order[state.turnIndex || 0];
-        if(currentId !== myId) return "Another player is acting.";
-        if(!state.discovererPlayed) return myHand.includes("discoverer") ? "Play First Finder and announce the incident." : "Waiting for First Finder.";
-        return "Play 1 card. Detective only works from round 2 onward.";
+        if(currentId !== myId) return "ほかのプレイヤーの手番です。";
+        if(!state.discovererPlayed) return myHand.includes("discoverer") ? "第一発見者を出して事件を宣言してください。" : "第一発見者が出るまで待機中です。";
+        return "手札から1枚出してください。探偵は2周目から有効です。";
     },
     join() {
         db.ref('kd/players').once('value', snap => {
@@ -473,7 +473,7 @@ const KillerDance = {
             const players = state.players || {};
             const ids = Object.keys(players);
             if(ids.length < 3 || ids.length > 8) {
-                alert("Need 3 to 8 players.");
+                alert("3人から8人で開始してください。");
                 return;
             }
             const deck = this.buildDeck(ids.length);
@@ -495,7 +495,7 @@ const KillerDance = {
                 privateInfo: {},
                 schemePlayers: {},
                 winner: null,
-                log: { [Date.now()]: `Game start: ${ids.map(id => players[id].name).join(", ")}` }
+                log: { [Date.now()]: `ゲーム開始: ${ids.map(id => players[id].name).join(", ")}` }
             });
         });
     },
@@ -532,51 +532,51 @@ const KillerDance = {
             let discovererPlayed = state.discovererPlayed || false;
             let pending = null;
             let winner = null;
-            let logText = `${Core.user} played ${this.cardDefs[card].label}`;
+            let logText = `${Core.user} が ${this.cardDefs[card].label} を出した`;
             if(card === "discoverer") {
-                incident = prompt("Enter the incident", state.incident || "Incident") || "Incident";
+                incident = prompt("今回の事件名を入力してください", state.incident || "事件発生") || "事件発生";
                 discovererPlayed = true;
-                logText = `${Core.user} started the case`;
+                logText = `${Core.user} が第一発見者として事件を宣言した`;
             } else if(card === "scheme") {
                 schemePlayers[myId] = true;
-                logText = `${Core.user} joined the culprit side`;
+                logText = `${Core.user} がたくらみで犯人側についた`;
             } else if(card === "boy") {
                 const holder = this.findCulpritHolder(hands, players);
-                if(holder) privateInfo[myId] = `Boy info: ${holder.name} has the Culprit card.`;
-                logText = `${Core.user} checked the culprit holder`;
+                if(holder) privateInfo[myId] = `少年の情報: ${holder.name} が犯人カードを持っています。`;
+                logText = `${Core.user} が少年で犯人カードの所在を確認した`;
             } else if(card === "witness") {
-                const targetId = this.promptForTarget(players, order, myId, "Choose a player to inspect");
+                const targetId = this.promptForTarget(players, order, myId, "手札を見る相手を選んでください");
                 if(!targetId) return;
                 const cards = (hands[targetId] || []).map(c => this.cardDefs[c].label).join(" / ");
-                privateInfo[myId] = `Witness info: ${players[targetId].name} has [${cards || "none"}].`;
-                logText = `${Core.user} inspected ${players[targetId].name}`;
+                privateInfo[myId] = `目撃者の情報: ${players[targetId].name} の手札は [${cards || "なし"}] です。`;
+                logText = `${Core.user} が目撃者で ${players[targetId].name} の手札を見た`;
             } else if(card === "dog") {
-                const targetId = this.promptForTarget(players, order, myId, "Choose a player for Dog");
+                const targetId = this.promptForTarget(players, order, myId, "いぬで調べる相手を選んでください");
                 if(!targetId) return;
                 const targetHand = hands[targetId] || [];
                 if(targetHand.length) {
-                    const idx = this.promptForCardPosition(targetHand.length, `Pick a card position from ${players[targetId].name}`);
+                    const idx = this.promptForCardPosition(targetHand.length, `${players[targetId].name} の何枚目を調べますか？`);
                     if(idx === null) return;
                     if(targetHand[idx] === "culprit") {
-                        winner = this.makeWinner("Dog win", [myId], players);
-                        logText = `${Core.user} hit the Culprit card with Dog`;
+                        winner = this.makeWinner("いぬ勝利", [myId], players);
+                        logText = `${Core.user} がいぬで犯人カードを引き当てた`;
                     } else {
-                        privateInfo[myId] = `Dog result: ${players[targetId].name}'s card ${idx + 1} was not Culprit.`;
-                        logText = `${Core.user} missed with Dog`;
+                        privateInfo[myId] = `いぬの結果: ${players[targetId].name} の ${idx + 1} 枚目は犯人ではありません。`;
+                        logText = `${Core.user} はいぬを使ったが外れた`;
                     }
                 }
             } else if(card === "detective") {
-                const targetId = this.promptForTarget(players, order, myId, "Choose a player for Detective");
+                const targetId = this.promptForTarget(players, order, myId, "探偵で指名する相手を選んでください");
                 if(!targetId) return;
-                if((state.turnsPlayed || 0) < order.length) logText = `${Core.user} played Detective in round 1, so it had no effect`;
+                if((state.turnsPlayed || 0) < order.length) logText = `${Core.user} は1周目に探偵を出したため効果がなかった`;
                 else if(this.isCulprit(hands[targetId] || [])) {
-                    winner = this.makeWinner("Detective win", [myId], players);
-                    logText = `${Core.user} caught ${players[targetId].name}`;
-                } else logText = `${Core.user} missed with Detective`;
+                    winner = this.makeWinner("探偵勝利", [myId], players);
+                    logText = `${Core.user} が探偵で ${players[targetId].name} を当てた`;
+                } else logText = `${Core.user} は探偵で ${players[targetId].name} を外した`;
             } else if(card === "culprit") {
                 if(myHand.length !== 1) return;
-                winner = this.makeWinner("Culprit win", [myId].concat(Object.keys(schemePlayers)), players);
-                logText = `${Core.user} played Culprit as the last card`;
+                winner = this.makeWinner("犯人勝利", [myId].concat(Object.keys(schemePlayers)), players);
+                logText = `${Core.user} が最後の1枚として犯人を出した`;
             } else if(card === "rumor") {
                 const before = JSON.parse(JSON.stringify(hands));
                 order.forEach(id => {
@@ -590,19 +590,19 @@ const KillerDance = {
                         hands[id].push(moved);
                     }
                 });
-                logText = `${Core.user} triggered Rumor`;
+                logText = `${Core.user} がうわさを出した`;
             } else if(card === "trade") {
-                const targetId = this.promptForTarget(players, order, myId, "Choose a player to trade with");
+                const targetId = this.promptForTarget(players, order, myId, "取り引きする相手を選んでください");
                 if(!targetId) return;
                 if(hands[myId].length && hands[targetId].length) {
-                    const ownIdx = this.promptForOwnCard(hands[myId], "Choose your trade card");
+                    const ownIdx = this.promptForOwnCard(hands[myId], "交換に出す自分のカードを選んでください");
                     if(ownIdx === null) return;
                     pending = { type: "trade", initiatorId: myId, targetId, offeredCard: hands[myId].splice(ownIdx, 1)[0] };
-                    logText = `${Core.user} proposed a trade to ${players[targetId].name}`;
+                    logText = `${Core.user} が ${players[targetId].name} に取り引きを持ちかけた`;
                 }
             } else if(card === "infoControl") {
                 pending = { type: "infoControl", choices: {} };
-                logText = `${Core.user} triggered Info Control`;
+                logText = `${Core.user} が情報操作を出した`;
             }
             const payload = { hands, privateInfo, schemePlayers, incident, discovererPlayed, pending, turnsPlayed: (state.turnsPlayed || 0) + 1, winner };
             if(!pending && !winner) payload.turnIndex = this.nextTurn(order, turnIndex);
@@ -619,12 +619,12 @@ const KillerDance = {
             const myId = meEntry[0];
             if(state.pending.targetId !== myId) return;
             const hands = JSON.parse(JSON.stringify(state.hands || {}));
-            const idx = this.promptForOwnCard(hands[myId] || [], "Choose the card to return");
+            const idx = this.promptForOwnCard(hands[myId] || [], "交換で返すカードを選んでください");
             if(idx === null) return;
             const returned = hands[myId].splice(idx, 1)[0];
             hands[myId].push(state.pending.offeredCard);
             hands[state.pending.initiatorId].push(returned);
-            db.ref('kd').update({ hands, pending: null, turnIndex: this.nextTurn(state.turnOrder || [], state.turnIndex || 0) }).then(() => this.appendLog(`${players[myId].name} completed the trade`));
+            db.ref('kd').update({ hands, pending: null, turnIndex: this.nextTurn(state.turnOrder || [], state.turnIndex || 0) }).then(() => this.appendLog(`${players[myId].name} が取り引きを完了した`));
         });
     },
     respondInfoControl() {
@@ -636,7 +636,7 @@ const KillerDance = {
             if(!meEntry) return;
             const myId = meEntry[0];
             const hands = JSON.parse(JSON.stringify(state.hands || {}));
-            const idx = this.promptForOwnCard(hands[myId] || [], "Choose the card to pass left");
+            const idx = this.promptForOwnCard(hands[myId] || [], "左隣に渡すカードを選んでください");
             if(idx === null) return;
             const choices = Object.assign({}, state.pending.choices || {}, { [myId]: idx });
             const requiredIds = (state.turnOrder || []).filter(id => (hands[id] || []).length > 0);
@@ -654,7 +654,7 @@ const KillerDance = {
                     hands[leftId].push(chosen);
                 }
             });
-            db.ref('kd').update({ hands, pending: null, turnIndex: this.nextTurn(state.turnOrder || [], state.turnIndex || 0) }).then(() => this.appendLog("Info Control resolved"));
+            db.ref('kd').update({ hands, pending: null, turnIndex: this.nextTurn(state.turnOrder || [], state.turnIndex || 0) }).then(() => this.appendLog("情報操作が解決された"));
         });
     },
     canPlayCard(state, myId, card, myHand) {
@@ -692,7 +692,7 @@ const KillerDance = {
         return Number.isInteger(picked) && picked >= 0 && picked < hand.length ? picked : null;
     },
     promptForCardPosition(count, title) {
-        const raw = prompt(`${title}\nPick 1-${count}`, "1");
+        const raw = prompt(`${title}\n1-${count} の番号を入力してください`, "1");
         if(raw === null) return null;
         const picked = Number(raw) - 1;
         return Number.isInteger(picked) && picked >= 0 && picked < count ? picked : null;
