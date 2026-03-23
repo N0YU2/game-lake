@@ -592,17 +592,27 @@ const KillerDance = {
                 });
                 logText = `${Core.user} がうわさを出した`;
             } else if(card === "trade") {
-                const targetId = this.promptForTarget(players, order, myId, "取り引きする相手を選んでください");
-                if(!targetId) return;
-                if(hands[myId].length && hands[targetId].length) {
-                    const ownIdx = this.promptForOwnCard(hands[myId], "交換に出す自分のカードを選んでください");
-                    if(ownIdx === null) return;
-                    pending = { type: "trade", initiatorId: myId, targetId, offeredCard: hands[myId].splice(ownIdx, 1)[0] };
-                    logText = `${Core.user} が ${players[targetId].name} に取り引きを持ちかけた`;
+                if(hands[myId].length === 0) {
+                    logText = `${Core.user} が取り引きを出したが、残り手札がないため効果はなかった`;
+                } else {
+                    const targetId = this.promptForTarget(players, order, myId, "取り引きする相手を選んでください");
+                    if(!targetId) return;
+                    if(hands[targetId].length) {
+                        const ownIdx = this.promptForOwnCard(hands[myId], "交換に出す自分のカードを選んでください");
+                        if(ownIdx === null) return;
+                        pending = { type: "trade", initiatorId: myId, targetId, offeredCard: hands[myId].splice(ownIdx, 1)[0] };
+                        logText = `${Core.user} が ${players[targetId].name} に取り引きを持ちかけた`;
+                    } else {
+                        logText = `${Core.user} が取り引きを出したが、相手の手札がなく効果はなかった`;
+                    }
                 }
             } else if(card === "infoControl") {
-                pending = { type: "infoControl", choices: {} };
-                logText = `${Core.user} が情報操作を出した`;
+                if(hands[myId].length === 0) {
+                    logText = `${Core.user} が情報操作を出したが、残り手札がないため効果はなかった`;
+                } else {
+                    pending = { type: "infoControl", choices: {} };
+                    logText = `${Core.user} が情報操作を出した`;
+                }
             }
             const payload = { hands, privateInfo, schemePlayers, incident, discovererPlayed, pending, turnsPlayed: (state.turnsPlayed || 0) + 1, winner };
             if(!pending && !winner) payload.turnIndex = this.nextTurn(order, turnIndex);
